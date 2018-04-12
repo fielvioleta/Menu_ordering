@@ -34,6 +34,12 @@
                     <p>Categories</p>
                 </a>
             </li>
+            <li class="<?php echo $controller == 'products' ? 'active' : '' ?>">
+                <a href="/admin/products/list">
+                    <i class="material-icons">cake</i>
+                    <p>Products</p>
+                </a>
+            </li>
             <li>
                 <a href="/admin/users/logout">
                     <i class="material-icons">power_settings_new</i>
