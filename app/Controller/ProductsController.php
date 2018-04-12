@@ -2,7 +2,7 @@
 
 class ProductsController extends AppController {
 
-	public $uses = ['Product'];
+	public $uses = ['Product', 'Category'];
 
 	public function beforeFilter() {
 		parent::beforeFilter();
@@ -24,16 +24,22 @@ class ProductsController extends AppController {
 
 	public function admin_register() {
 		if($this->request->is('post')) {
-			$this->Product->set($this->request->data);
-			if( $this->Product->validates() ) {
-				if( $this->Product->save($this->request->data) ) {
-					$this->Flash->success('The product has been saved');
-					return $this->redirect('/admin/products/list');
-				} else {
-					$this->Flash->error('The product could not be saved. Please, try again.');
-				}
-			}
+			pr($this->request->data);
+			// $this->Product->set($this->request->data);
+			// if( $this->Product->validates() ) {
+			// 	if( $this->Product->save($this->request->data) ) {
+			// 		$this->Flash->success('The product has been saved');
+			// 		return $this->redirect('/admin/products/list');
+			// 	} else {
+			// 		$this->Flash->error('The product could not be saved. Please, try again.');
+			// 	}
+			// }
 		}
+		$categories = $this->Category->find('list' , [
+			'fields' => ['id' , 'name']
+		]);
+		$available = [ 0 => 'Available', 1 => 'Not available'] ;
+		$this->set(compact('categories', 'available'));
 	}
 
 	public function admin_delete() {
