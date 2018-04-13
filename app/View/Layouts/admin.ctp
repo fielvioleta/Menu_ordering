@@ -29,8 +29,8 @@
 
 		// jfiler
 		echo $this->Html->script('../files/jfiler/js/jquery.filer.min');
-		echo $this->Html->css('../files/jfiler/css/jquery.filer');
 		echo $this->Html->css('../files/jfiler/css/themes/jquery.filer-dragdropbox-theme');
+		echo $this->Html->css('../files/jfiler/css/jquery.filer');
 	?>
 </head>
 	<body>
