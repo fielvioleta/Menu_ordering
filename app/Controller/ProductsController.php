@@ -26,45 +26,49 @@ class ProductsController extends AppController {
 
 	public function admin_register() {
 		if($this->request->is('post')) {
-			$tmpFoldername 	= str_shuffle(time() . mt_rand());
-			$tmpFolder 		= WWW_ROOT . 'files/products/tmp/'.$tmpFoldername;
-			$image_name 	= $this->request->data['Product']['image']['name'];
-			$filepath		= $tmpFolder . '/product.' . pathinfo($image_name, PATHINFO_EXTENSION);
-			$filepathCopy	= $tmpFolder . '/show-product.' . pathinfo($image_name, PATHINFO_EXTENSION);
-			$generatedFile	= 'product.' . pathinfo($image_name, PATHINFO_EXTENSION);
+			if ($this->request->data['Product']['image']['error'] === 0) {
+				$tmpFoldername 	= str_shuffle(time() . mt_rand());
+				$tmpFolder 		= WWW_ROOT . 'files/products/tmp/'.$tmpFoldername;
+				$image_name 	= $this->request->data['Product']['image']['name'];
+				$filepath		= $tmpFolder . '/product.' . pathinfo($image_name, PATHINFO_EXTENSION);
+				$filepathCopy	= $tmpFolder . '/show-product.' . pathinfo($image_name, PATHINFO_EXTENSION);
+				$generatedFile	= 'product.' . pathinfo($image_name, PATHINFO_EXTENSION);
+				
+				if (!is_dir( $tmpFolder )) {
+					mkdir($tmpFolder, 0777, true);
+				}
 
-			if (!is_dir( $tmpFolder )) {
-				mkdir($tmpFolder, 0777, true);
+				if(!move_uploaded_file(
+					$this->request->data['Product']['image']['tmp_name'], 
+					$filepath)
+				) {
+					$this->Flash->error('Error in saving image please try again');
+					return $this->redirect('/admin/products/register');
+				} else {
+					ImageTool::resize([
+						'input' 	=> $filepath,
+						'output' 	=> $filepathCopy,
+						'width' 	=> 300
+					]);
+					$this->Session->write('Product.tmpFolder' , $tmpFoldername);
+					$this->Session->write('Product.tmpfileName' , $generatedFile);
+				}	
 			}
-
-			if(!move_uploaded_file(
-				$this->request->data['Product']['image']['tmp_name'], 
-				$filepath)
-			) {
-				$this->Flash->success('Error in saving image please try again');
-				return $this->redirect('/admin/products/register');
-			} else {
-				ImageTool::resize([
-					'input' 	=> $filepath,
-					'output' 	=> $filepathCopy,
-					'width' 	=> 300
-				]);
-				$this->Session->write('Product.tmpFolder' , $tmpFoldername);
-				$this->Session->write('Product.tmpfileName' , $generatedFile);
-			}
-
+			
 			$this->Product->set($this->request->data);
 			if( $this->Product->validates() ) {
 				if( $this->Product->save($this->request->data) ) {
-					$folder = new Folder();
-					$folder->copy([
-					    'to' 		=> WWW_ROOT. 'files/products/' . $this->Product->getLastInsertID(),
-					    'from' 		=> $tmpFolder,
-					    'mode' 		=> 0755,
-					    'recursive' => true
-					]);
-					$folder = new Folder($tmpFolder);
-					$folder->delete();
+					if ($this->request->data['Product']['image']['error'] === 0) {
+						$folder = new Folder();
+						$folder->copy([
+						    'to' 		=> WWW_ROOT. 'files/products/' . $this->Product->getLastInsertID(),
+						    'from' 		=> $tmpFolder,
+						    'mode' 		=> 0755,
+						    'recursive' => true
+						]);
+						$folder = new Folder($tmpFolder);
+						$folder->delete();
+					}
 
 					$this->Flash->success('The product has been saved');
 					$this->Session->delete('Product');
@@ -102,31 +106,45 @@ class ProductsController extends AppController {
 			if( $this->Product->validates() ) {
 				$this->Product->id = $id;
 				if( $this->Product->save($this->request->data) ) {
-					$folder 		= WWW_ROOT . 'files/products/' . $id;
-					$image_name 	= $this->request->data['Product']['image']['name'];
-					$filepath		= $folder . '/product.' . pathinfo($image_name, PATHINFO_EXTENSION);
-					$filepathCopy	= $folder . '/show-product.' . pathinfo($image_name, PATHINFO_EXTENSION);
-					$generatedFile	= 'product.' . pathinfo($image_name, PATHINFO_EXTENSION);
+					if ($this->request->data['Product']['image']['error'] === 0) {
+						$folder 		= WWW_ROOT . 'files/products/' . $id;
+						$image_name 	= $this->request->data['Product']['image']['name'];
+						$filepath		= $folder . '/product.' . pathinfo($image_name, PATHINFO_EXTENSION);
+						$filepathCopy	= $folder . '/show-product.' . pathinfo($image_name, PATHINFO_EXTENSION);
+						$generatedFile	= 'product.' . pathinfo($image_name, PATHINFO_EXTENSION);
 
-					$dir 			= new Folder($folder);
-					$existingFiles 	= $dir->find('.*');
-					foreach ($existingFiles as $file) {
-						$file = new File($dir->pwd() . DS . $file);
-						$file->delete();
-					}
+						if (!is_dir( $folder )) {
+							mkdir($folder, 0777, true);
+						}
 
-					if(!move_uploaded_file(
-						$this->request->data['Product']['image']['tmp_name'], 
-						$filepath)
-					) {
-						$this->Flash->success('Error in saving image please try again');
-						return $this->redirect('/admin/products/edit/' . $id);
+						$dir 			= new Folder($folder);
+						$existingFiles 	= $dir->find('.*');
+						foreach ($existingFiles as $file) {
+							$file = new File($dir->pwd() . DS . $file);
+							$file->delete();
+						}
+
+						if(!move_uploaded_file(
+							$this->request->data['Product']['image']['tmp_name'], 
+							$filepath)
+						) {
+							$this->Flash->error('Error in saving image please try again');
+							return $this->redirect('/admin/products/edit/' . $id);
+						} else {
+							ImageTool::resize([
+								'input' 	=> $filepath,
+								'output' 	=> $filepathCopy,
+								'width' 	=> 300
+							]);
+						}
 					} else {
-						ImageTool::resize([
-							'input' 	=> $filepath,
-							'output' 	=> $filepathCopy,
-							'width' 	=> 300
-						]);
+						$folder 		= WWW_ROOT . 'files/products/' . $id;
+						$dir 			= new Folder($folder);
+						$existingFiles 	= $dir->find('.*');
+						foreach ($existingFiles as $file) {
+							$file = new File($dir->pwd() . DS . $file);
+							$file->delete();
+						}
 					}
 
 					$this->Flash->success('The product has been edited');
