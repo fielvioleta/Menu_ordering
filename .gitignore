@@ -4,3 +4,4 @@
 /app/Config/core.php
 /app/Config/database.php
 /vendors/*
+/app/webroot/files/products/
