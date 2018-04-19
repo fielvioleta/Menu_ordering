@@ -1,4 +1,6 @@
 <?php
+App::import('Vendor', 'ImageTool');
+App::uses('Folder', 'Utility');
 
 class ProductsController extends AppController {
 
@@ -24,37 +26,151 @@ class ProductsController extends AppController {
 
 	public function admin_register() {
 		if($this->request->is('post')) {
-			$tmpFoldername = str_shuffle(time().mt_rand());
-			$tmpFolder = WWW_ROOT. 'files/products/tmp/'.$tmpFoldername;
+			$tmpFoldername 	= str_shuffle(time() . mt_rand());
+			$tmpFolder 		= WWW_ROOT . 'files/products/tmp/'.$tmpFoldername;
+			$image_name 	= $this->request->data['Product']['image']['name'];
+			$filepath		= $tmpFolder . '/product.' . pathinfo($image_name, PATHINFO_EXTENSION);
+			$filepathCopy	= $tmpFolder . '/show-product.' . pathinfo($image_name, PATHINFO_EXTENSION);
+			$generatedFile	= 'product.' . pathinfo($image_name, PATHINFO_EXTENSION);
+
 			if (!is_dir( $tmpFolder )) {
 				mkdir($tmpFolder, 0777, true);
 			}
 
-			if(!move_uploaded_file($this->request->data['Product']['image']['tmp_name'], $tmpFolder . '/' . $this->request->data['Product']['image']['name'])) {
+			if(!move_uploaded_file(
+				$this->request->data['Product']['image']['tmp_name'], 
+				$filepath)
+			) {
 				$this->Flash->success('Error in saving image please try again');
 				return $this->redirect('/admin/products/register');
+			} else {
+				ImageTool::resize([
+					'input' 	=> $filepath,
+					'output' 	=> $filepathCopy,
+					'width' 	=> 300
+				]);
+				$this->Session->write('Product.tmpFolder' , $tmpFoldername);
+				$this->Session->write('Product.tmpfileName' , $generatedFile);
 			}
-			// $this->Product->set($this->request->data);
-			// if( $this->Product->validates() ) {
-			// 	if( $this->Product->save($this->request->data) ) {
-			// 		$this->Flash->success('The product has been saved');
-			// 		return $this->redirect('/admin/products/list');
-			// 	} else {
-			// 		$this->Flash->error('The product could not be saved. Please, try again.');
-			// 	}
-			// }
+
+			$this->Product->set($this->request->data);
+			if( $this->Product->validates() ) {
+				if( $this->Product->save($this->request->data) ) {
+					$folder = new Folder();
+					$folder->copy([
+					    'to' 		=> WWW_ROOT. 'files/products/' . $this->Product->getLastInsertID(),
+					    'from' 		=> $tmpFolder,
+					    'mode' 		=> 0755,
+					    'recursive' => true
+					]);
+					$folder = new Folder($tmpFolder);
+					$folder->delete();
+
+					$this->Flash->success('The product has been saved');
+					$this->Session->delete('Product');
+					return $this->redirect('/admin/products/list');
+				} else {
+					$this->Flash->error('The product could not be saved. Please, try again.');
+				}
+			} 
 		}
 		$categories = $this->Category->find('list' , [
 			'fields' => ['id' , 'name']
 		]);
-		$available = [ 0 => 'Available', 1 => 'Not available'] ;
-		$this->set(compact('categories', 'available', 'image_data'));
+		$available = [ 0 => 'Available', 1 => 'Not available'];
+
+		if ( $this->Session->read('Product.tmpFolder') ) {
+			$localhost = Configure::read('localhost');
+			$path = $localhost . 'files/products/tmp/' . $this->Session->read('Product.tmpFolder') . '/' . $this->Session->read('Product.tmpfileName');
+			$arrFiles['name'] = basename($path);
+			$arrFiles['type'] = "image/".pathinfo( $path , PATHINFO_EXTENSION );
+			$arrFiles['file'] = $path;
+			$this->set( 'files' , [$arrFiles] );
+			$this->Session->delete('Product');
+		}
+
+		$this->set(compact('categories', 'available'));
+	}
+
+	public function admin_edit( $id = null ) {
+		if( !$id ) {
+			throw new BadRequestException();
+		}
+
+		if( $this->request->is(['post','put']) ) {
+			$this->Product->set($this->request->data);
+			if( $this->Product->validates() ) {
+				$this->Product->id = $id;
+				if( $this->Product->save($this->request->data) ) {
+					$folder 		= WWW_ROOT . 'files/products/' . $id;
+					$image_name 	= $this->request->data['Product']['image']['name'];
+					$filepath		= $folder . '/product.' . pathinfo($image_name, PATHINFO_EXTENSION);
+					$filepathCopy	= $folder . '/show-product.' . pathinfo($image_name, PATHINFO_EXTENSION);
+					$generatedFile	= 'product.' . pathinfo($image_name, PATHINFO_EXTENSION);
+
+					$dir 			= new Folder($folder);
+					$existingFiles 	= $dir->find('.*');
+					foreach ($existingFiles as $file) {
+						$file = new File($dir->pwd() . DS . $file);
+						$file->delete();
+					}
+
+					if(!move_uploaded_file(
+						$this->request->data['Product']['image']['tmp_name'], 
+						$filepath)
+					) {
+						$this->Flash->success('Error in saving image please try again');
+						return $this->redirect('/admin/products/edit/' . $id);
+					} else {
+						ImageTool::resize([
+							'input' 	=> $filepath,
+							'output' 	=> $filepathCopy,
+							'width' 	=> 300
+						]);
+					}
+
+					$this->Flash->success('The product has been edited');
+					return $this->redirect('/admin/products/edit/'.$id);
+				} else {
+					$this->Flash->error('The product could not be edited. Please, try again.');
+				}
+			}
+		}
+
+		if( !$this->Product->findById($id) ) {
+			$this->Flash->error('Invalid Product');
+			return $this->redirect('/admin/products/list');
+		}
+		$this->request->data = $this->Product->findById($id);
+
+		$categories = $this->Category->find('list' , [
+			'fields' => ['id' , 'name']
+		]);
+		$available = [ 0 => 'Available', 1 => 'Not available'];
+
+		$path 	= WWW_ROOT. 'files/products/'. $id ;
+		$dir 	= new Folder( $path );
+		$files 	= $dir->find('.*', true);
+		$arrFiles = [];
+		foreach ( $files  as $key => $value) {
+			if ( pathinfo($value)['filename'] === 'product' ) {
+				$localhost = Configure::read('localhost');
+				$arrFiles[$key]['name'] = basename($value);
+				$arrFiles[$key]['type'] = "image/".pathinfo( $value , PATHINFO_EXTENSION );
+				$arrFiles[$key]['file'] = $localhost . 'files/products/' . $id . '/' . $value;
+			}
+			
+		}
+
+		$this->set( 'files' , $arrFiles );
+		$this->set(compact('categories', 'available'));
 	}
 
 	public function admin_delete() {
 		if( $this->request->is('post') ) {
-			$productId = $this->request->data['cateogry_id'];
-			if ( $this->Category->delete( $categoryId ) ) {
+			if ( $this->Product->delete($this->request->data['user_id']) ) {
+				$folder = new Folder(WWW_ROOT . 'files/products/' . $this->request->data['user_id']);
+				$folder->delete();
 				return true;
 			}
 			return false;

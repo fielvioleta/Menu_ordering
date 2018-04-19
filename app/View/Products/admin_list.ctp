@@ -28,7 +28,7 @@
 													<button value="<?php echo $product['Product']['id'] ?>" type="submit" class="btn btn-sm btn-primary pull-right btn-delete" data-toggle="modal" data-target="#deleteModal">
 														Delete Product<div class="ripple-container"></div>
 													</button>
-													<button type="submit" class="btn btn-sm btn-primary pull-right" onClick="window.location.href='/admin/users/edit/<?php echo $product['Product']['id'] ?>'">
+													<button type="submit" class="btn btn-sm btn-primary pull-right" onClick="window.location.href='/admin/products/edit/<?php echo $product['Product']['id'] ?>'">
 														Edit Product<div class="ripple-container"></div>
 													</button>
 												</td>
