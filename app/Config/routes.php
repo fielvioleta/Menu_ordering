@@ -26,6 +26,11 @@
  * to use (in this case, /app/View/Pages/home.ctp)...
  */
 	Router::connect('/', array('controller' => 'users', 'action' => 'login', 'admin' => true ));
+
+	// for mobile
+	Router::connect('/menu_ordering/:action', array('controller' => 'apis'));
+
+
 /**
  * ...and connect the rest of 'Pages' controller's URLs.
  */

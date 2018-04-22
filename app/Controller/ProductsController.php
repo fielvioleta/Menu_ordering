@@ -33,7 +33,8 @@ class ProductsController extends AppController {
 				$filepath		= $tmpFolder . '/product.' . pathinfo($image_name, PATHINFO_EXTENSION);
 				$filepathCopy	= $tmpFolder . '/show-product.' . pathinfo($image_name, PATHINFO_EXTENSION);
 				$generatedFile	= 'product.' . pathinfo($image_name, PATHINFO_EXTENSION);
-				
+				$this->request->data['Product']['image_path'] = 'show-product.' . pathinfo($image_name, PATHINFO_EXTENSION);
+
 				if (!is_dir( $tmpFolder )) {
 					mkdir($tmpFolder, 0777, true);
 				}
@@ -112,7 +113,8 @@ class ProductsController extends AppController {
 						$filepath		= $folder . '/product.' . pathinfo($image_name, PATHINFO_EXTENSION);
 						$filepathCopy	= $folder . '/show-product.' . pathinfo($image_name, PATHINFO_EXTENSION);
 						$generatedFile	= 'product.' . pathinfo($image_name, PATHINFO_EXTENSION);
-
+						$this->request->data['Product']['image_path'] = 'show-product.' . pathinfo($image_name, PATHINFO_EXTENSION);
+						
 						if (!is_dir( $folder )) {
 							mkdir($folder, 0777, true);
 						}

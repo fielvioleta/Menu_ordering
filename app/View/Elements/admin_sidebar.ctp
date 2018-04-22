@@ -10,34 +10,44 @@
 	</div>
 	<div class="sidebar-wrapper">
         <ul class="nav">
+            
             <li class="<?php echo $controller == 'dashboard' ? 'active' : '' ?>">
                 <a href="/admin/dashboard">
                     <i class="material-icons">dashboard</i>
                     <p>Dashboard</p>
                 </a>
-            </li>
-            <li class="<?php echo $controller == 'users' ? 'active' : '' ?>">
-                <a href="/admin/users/list">
-                    <i class="material-icons">person</i>
-                    <p>Users</p>
-                </a>
-            </li>
-            <li class="<?php echo $controller == 'tables' ? 'active' : '' ?>">
-                <a href="/admin/tables/list">
-                    <i class="material-icons">all_out</i>
-                    <p>Tables</p>
-                </a>
-            </li>
-            <li class="<?php echo $controller == 'categories' ? 'active' : '' ?>">
-                <a href="/admin/categories/list">
-                    <i class="material-icons">list</i>
-                    <p>Categories</p>
-                </a>
-            </li>
-            <li class="<?php echo $controller == 'products' ? 'active' : '' ?>">
-                <a href="/admin/products/list">
-                    <i class="material-icons">cake</i>
-                    <p>Products</p>
+            
+            <?php if( $this->Session->read('Auth.User.user_type') != 2 ): ?>
+                </li>
+                <li class="<?php echo $controller == 'users' ? 'active' : '' ?>">
+                    <a href="/admin/users/list">
+                        <i class="material-icons">person</i>
+                        <p>Users</p>
+                    </a>
+                </li>
+                <li class="<?php echo $controller == 'tables' ? 'active' : '' ?>">
+                    <a href="/admin/tables/list">
+                        <i class="material-icons">all_out</i>
+                        <p>Tables</p>
+                    </a>
+                </li>
+                <li class="<?php echo $controller == 'categories' ? 'active' : '' ?>">
+                    <a href="/admin/categories/list">
+                        <i class="material-icons">list</i>
+                        <p>Categories</p>
+                    </a>
+                </li>
+                <li class="<?php echo $controller == 'products' ? 'active' : '' ?>">
+                    <a href="/admin/products/list">
+                        <i class="material-icons">cake</i>
+                        <p>Products</p>
+                    </a>
+                </li>
+            <?php endif; ?>
+            <li>
+                <a href="/admin/orders/list">
+                    <i class="material-icons">local_pizza</i>
+                    <p>Orders</p>
                 </a>
             </li>
             <li>
