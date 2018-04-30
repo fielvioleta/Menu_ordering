@@ -28,7 +28,14 @@
 	Router::connect('/', array('controller' => 'users', 'action' => 'login', 'admin' => true ));
 
 	// for mobile
-	Router::connect('/menu_ordering/:action', array('controller' => 'apis'));
+	// Router::connect('/menu_ordering/:action', array('controller' => 'apis'));
+	Router::connect('/menu_ordering/:action',
+		['controller' => 'apis', 'action' => 'action']
+	);
+	Router::connect('/menu_ordering/:action/:id',
+		['controller' => 'apis', 'action' => 'action'],
+		['pass' => ['id']]
+	);
 
 
 /**

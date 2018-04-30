@@ -13,6 +13,7 @@ class ApisController extends AppController {
 		$this->Auth->allow([
 			'getProducts',
 			'getCategories',
+			'getProductsByCategoryId',
 			'occupyTable'
 
 		]);
@@ -31,6 +32,19 @@ class ApisController extends AppController {
 			'fields' => ['id', 'name', 'description']
 		]);
 	 	return json_encode($categories);
+	}
+
+	public function getProductsByCategoryId($category_id = null) {
+		if( !$category_id ) {
+			throw new BadRequestException();
+		}
+
+		$products = $this->Product->find('all', [
+			'fields'		=> ['id', 'name', 'description', 'category_id', 'image_path', 'price', 'is_not_available'],
+			'conditions'	=> ['category_id' => $category_id],
+		]);
+
+		return json_encode($products);
 	}
 
 	public function occupyTable($table_id = null) {

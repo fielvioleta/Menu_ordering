@@ -33,7 +33,6 @@ class ProductsController extends AppController {
 				$filepath		= $tmpFolder . '/product.' . pathinfo($image_name, PATHINFO_EXTENSION);
 				$filepathCopy	= $tmpFolder . '/show-product.' . pathinfo($image_name, PATHINFO_EXTENSION);
 				$generatedFile	= 'product.' . pathinfo($image_name, PATHINFO_EXTENSION);
-				$this->request->data['Product']['image_path'] = 'show-product.' . pathinfo($image_name, PATHINFO_EXTENSION);
 
 				if (!is_dir( $tmpFolder )) {
 					mkdir($tmpFolder, 0777, true);
@@ -60,13 +59,15 @@ class ProductsController extends AppController {
 			if( $this->Product->validates() ) {
 				if( $this->Product->save($this->request->data) ) {
 					if ($this->request->data['Product']['image']['error'] === 0) {
+						$id = $this->Product->getLastInsertID();
 						$folder = new Folder();
 						$folder->copy([
-						    'to' 		=> WWW_ROOT. 'files/products/' . $this->Product->getLastInsertID(),
+						    'to' 		=> WWW_ROOT. 'files/products/' . $id,
 						    'from' 		=> $tmpFolder,
 						    'mode' 		=> 0755,
 						    'recursive' => true
 						]);
+						$this->Product->saveField('image_path', '/files/products/' . $id . '/show-product.' . pathinfo($image_name, PATHINFO_EXTENSION));
 						$folder = new Folder($tmpFolder);
 						$folder->delete();
 					}
@@ -113,8 +114,8 @@ class ProductsController extends AppController {
 						$filepath		= $folder . '/product.' . pathinfo($image_name, PATHINFO_EXTENSION);
 						$filepathCopy	= $folder . '/show-product.' . pathinfo($image_name, PATHINFO_EXTENSION);
 						$generatedFile	= 'product.' . pathinfo($image_name, PATHINFO_EXTENSION);
-						$this->request->data['Product']['image_path'] = 'show-product.' . pathinfo($image_name, PATHINFO_EXTENSION);
-						
+						$this->Product->saveField('image_path', '/files/products/' . $id . '/show-product.' . pathinfo($image_name, PATHINFO_EXTENSION));
+
 						if (!is_dir( $folder )) {
 							mkdir($folder, 0777, true);
 						}
