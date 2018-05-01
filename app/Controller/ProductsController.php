@@ -48,7 +48,7 @@ class ProductsController extends AppController {
 					ImageTool::resize([
 						'input' 	=> $filepath,
 						'output' 	=> $filepathCopy,
-						'width' 	=> 300
+						'width' 	=> 358
 					]);
 					$this->Session->write('Product.tmpFolder' , $tmpFoldername);
 					$this->Session->write('Product.tmpfileName' , $generatedFile);
@@ -137,7 +137,7 @@ class ProductsController extends AppController {
 							ImageTool::resize([
 								'input' 	=> $filepath,
 								'output' 	=> $filepathCopy,
-								'width' 	=> 300
+								'width' 	=> 358
 							]);
 						}
 					} else {
