@@ -18,9 +18,9 @@ class ProductsController extends AppController {
 
 	public function admin_list() {
 		$products = $this->Product->find('all', [
+			'fields'	=> 'Product.*,Category.name',
 			'order' 	=> 'Product.created DESC'
 		]);
-
 		$this->set(compact('products'));
 	}
 

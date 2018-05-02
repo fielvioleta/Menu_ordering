@@ -15,14 +15,20 @@
                         <table class="table">
                         	<?php if(count($products)>0):?>
 	                            <thead class="text-primary">
+	                            	<th>Image</th>
 	                            	<th>Name</th>
+	                            	<th>Category</th>
 	                            	<th>Description</th>
 									<th></th>
 	                            </thead>
 	                            <tbody>
 		                            	<?php foreach( $products as $key => $product ):?>
 			                                <tr>
+			                                	<td>
+			                                		<?php echo $this->Html->image('../'.$product['Product']['image_path']) ?> 
+			                                	</td>
 			                                	<td><?php echo $product['Product']['name'] ?></td>
+			                                	<td><?php echo $product['Category']['name'] ?></td>
 			                                	<td><?php echo $product['Product']['description'] ?></td>
 												<td>
 													<button value="<?php echo $product['Product']['id'] ?>" type="submit" class="btn btn-sm btn-primary pull-right btn-delete" data-toggle="modal" data-target="#deleteModal">

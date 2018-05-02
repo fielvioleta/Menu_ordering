@@ -5,6 +5,7 @@ App::uses('AppModel', 'Model');
 *
 **/
 class Product extends AppModel {
+	public $belongsTo  = 'Category';
 	public $validate = [
 		'name' => [
 			'required' => [
