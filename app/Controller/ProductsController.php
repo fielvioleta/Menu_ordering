@@ -141,12 +141,14 @@ class ProductsController extends AppController {
 							]);
 						}
 					} else {
-						$folder 		= WWW_ROOT . 'files/products/' . $id;
-						$dir 			= new Folder($folder);
-						$existingFiles 	= $dir->find('.*');
-						foreach ($existingFiles as $file) {
-							$file = new File($dir->pwd() . DS . $file);
-							$file->delete();
+						if( $this->request->data['Product']['image_selected'] == 'false' ) {
+							$folder 		= WWW_ROOT . 'files/products/' . $id;
+							$dir 			= new Folder($folder);
+							$existingFiles 	= $dir->find('.*');
+							foreach ($existingFiles as $file) {
+								$file = new File($dir->pwd() . DS . $file);
+								$file->delete();
+							}
 						}
 					}
 

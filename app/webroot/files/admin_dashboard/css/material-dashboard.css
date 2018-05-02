@@ -1325,6 +1325,7 @@ h2.title {
 .navbar .navbar-nav > li > a.btn {
   padding: 5px 20px;
   font-size: 11px;
+  width: 100%;
 }
 .btn.btn-xs, .btn-group-xs .btn,
 .navbar .navbar-nav > li > a.btn.btn-xs, .btn-group-xs

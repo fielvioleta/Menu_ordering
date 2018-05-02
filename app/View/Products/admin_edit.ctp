@@ -14,6 +14,10 @@
 								'enctype' 		=> 'multipart/form-data',
 								'method'		=> 'post'
 							]);
+							echo $this->Form->input( 'image_selected' , [
+								'type'	=> 'hidden',
+								'id'	=> 'image_selected'
+							]);
                         ?>
 	                            <div class="row">
 	                                <div class="col-md-12">
@@ -159,7 +163,7 @@
 <script>
 	$(document).ready(function(){
 		const files = <?php echo ( isset( $files ) ) ? json_encode($files) : "''" ?>;
-		console.log(files);
+		if( files.length > 0 ) { $('#image_selected').val(true); }
 		$('#input2').filer({
 	        limit: 1,
 	        extensions: ['jpg', 'jpeg', 'png', 'gif'],
@@ -225,7 +229,8 @@
 				success: function(data, el){
 					var parent = el.find(".jFiler-jProgressBar").parent();
 					el.find(".jFiler-jProgressBar").fadeOut("slow", function(){
-						$("<div class=\"jFiler-item-others text-success\"><i class=\"icon-jfi-check-circle\"></i> Success</div>").hide().appendTo(parent).fadeIn("slow");    
+						$("<div class=\"jFiler-item-others text-success\"><i class=\"icon-jfi-check-circle\"></i> Success</div>").hide().appendTo(parent).fadeIn("slow");
+						$('#image_selected').val(true);
 					});
 				},
 			},
@@ -240,7 +245,9 @@
 	        beforeShow: function(){return true},
 	        onSelect: function(){},
 	        afterShow: function(){},
-	        onRemove: function(){},
+	        onRemove: function(){
+	        	$('#image_selected').val(false);
+	        },
 	        onEmpty: function(){},
 	        captions: {
 	            button: "Choose Files",
