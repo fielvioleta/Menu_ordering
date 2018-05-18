@@ -5,5 +5,5 @@ App::uses('AppModel', 'Model');
 *
 **/
 class OrderDetail extends AppModel {
-	
+	public $belongsTo = 'Product';
 }
