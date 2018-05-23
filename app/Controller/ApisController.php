@@ -19,8 +19,12 @@ class ApisController extends AppController {
 			'getCategories',
 			'getProductsByCategoryId',
 			'getOrderData',
+			'getAllOrders',
+			'getProductsForKitchen',
 			'occupyTable',
-			'saveOrders'
+			'saveOrders',
+			'updateKitchenStatus',
+			'updateAvailability'
 		]);
 		$this->autoRender = false;
 	}
@@ -75,6 +79,53 @@ class ApisController extends AppController {
 		}
 
 		return json_encode($returnData);
+	}
+
+	public function getAllOrders() {
+		$data = $this->OrderDetail->find('all', [
+			'fields'	=> [
+				'Order.table_id',
+				'OrderDetail.id',
+				'OrderDetail.quantity',
+				'OrderDetail.kitchen_status',
+				'Product.name',
+				'Product.image_path'
+			],
+			'order' 	=> [
+				'OrderDetail.kitchen_status' => 'ASC',
+				'OrderDetail.created' => 'DESC'
+			]
+		]);
+		$return_data = [];
+		foreach ($data as $key => $value) {
+			$return_data[$key]['table_id'] = $value['Order']['table_id'];
+			$return_data[$key]['order_detail_id'] = $value['OrderDetail']['id'];
+			$return_data[$key]['quantity'] = $value['OrderDetail']['quantity'];
+			$return_data[$key]['kitchen_status'] = $value['OrderDetail']['kitchen_status'];
+			$return_data[$key]['product_name'] = $value['Product']['name'];
+			$return_data[$key]['product_image_path'] = $value['Product']['image_path'];
+		}
+		return json_encode($return_data);
+	}
+
+	public function getProductsForKitchen() {
+		$data = $this->Category->find('all', [
+			'contain' 			=> [
+		        'Product' 		=> [
+		       		'fields' 	=> [
+		       			'Product.id',
+		       			'Product.name',
+		       			'Product.image_path',
+		       			'Product.is_not_available'
+		       		]
+		        ]
+		    ],
+		    'fields' 			=> [
+		    	'Category.name'
+		    ],
+		    'order' 			=> ['Category.id' => 'ASC']
+		]);		
+		return json_encode($data);
 	}
 
 	public function occupyTable($table_id = null) {
@@ -142,6 +193,36 @@ class ApisController extends AppController {
 			return $order_id;
 		} catch(Exception $e) {
 			$datasource->rollback();
+		}
+	}
+
+	public function updateKitchenStatus() {
+		if($this->request->is('post')){
+			$data = $this->request->input ( 'json_decode', true);
+
+			if( !$data['id'] ) {
+				throw new BadRequestException();
+			}
+			$this->OrderDetail->id = $data['id'];
+			if($this->OrderDetail->saveField('kitchen_status', 1)) {
+				return true;
+			}
+			return false;
+		}
+	}
+
+	public function updateAvailability() {
+		if($this->request->is('post')){
+			$data = $this->request->input ( 'json_decode', true);
+
+			if( !$data['id'] ) {
+				throw new BadRequestException();
+			}
+			$this->Product->id = $data['id'];
+			if($this->Product->saveField('is_not_available', $data['availability'])) {
+				return true;
+			}
+			return false;
 		}
 	}
 }

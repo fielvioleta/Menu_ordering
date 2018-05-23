@@ -5,6 +5,8 @@ App::uses('AppModel', 'Model');
 *
 **/
 class Category extends AppModel {
+	public $hasMany = 'Product';
+	public $actsAs 	= ['Containable'];
 	public $validate = [
 		'name' => [
 			'required' => [
