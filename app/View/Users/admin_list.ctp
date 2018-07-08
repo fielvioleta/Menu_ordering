@@ -45,13 +45,13 @@
 												<td><?php echo $user['User']['email'] ?></td>
 												<td><?php echo $user['User']['created'] ?></td>
 												<td>
-													<button value="<?php echo $user['User']['id'] ?>" type="submit" class="btn btn-sm btn-primary pull-right btn-delete" data-toggle="modal" data-target="#deleteModal">
+													<button value="<?php echo $user['User']['id'] ?>" type="submit" class="btn-width-unset btn btn-sm btn-primary pull-right btn-delete" data-toggle="modal" data-target="#deleteModal">
 														Delete User<div class="ripple-container"></div>
 													</button>
-													<button type="submit" class="btn btn-sm btn-primary pull-right" onClick="window.location.href='/admin/users/edit/<?php echo $user['User']['id'] ?>'">
-														Edit Profile<div class="ripple-container"></div>
+													<button type="submit" class="btn-width-unset btn btn-sm btn-primary pull-right" onClick="window.location.href='/admin/users/edit/<?php echo $user['User']['id'] ?>'">
+														Edit User<div class="ripple-container"></div>
 													</button>
-													<button type="submit" class="btn btn-sm btn-primary pull-right" onClick="window.location.href='/admin/users/change_password/<?php echo $user['User']['id'] ?>'">
+													<button type="submit" class="btn-width-unset btn btn-sm btn-primary pull-right" onClick="window.location.href='/admin/users/change_password/<?php echo $user['User']['id'] ?>'">
 														Change Password<div class="ripple-container"></div>
 													</button>
 												</td>

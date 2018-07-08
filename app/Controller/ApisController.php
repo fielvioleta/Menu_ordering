@@ -9,12 +9,14 @@ class ApisController extends AppController {
 		'Category',
 		'TableNumber',
 		'Order',
-		'OrderDetail'
+		'OrderDetail',
+		'Notification'
 	];
 
 	public function beforeFilter() {
 		parent::beforeFilter();
 		$this->Auth->allow([
+			'getBills',
 			'getProducts',
 			'getCategories',
 			'getProductsByCategoryId',
@@ -24,9 +26,25 @@ class ApisController extends AppController {
 			'occupyTable',
 			'saveOrders',
 			'updateKitchenStatus',
-			'updateAvailability'
+			'updateAvailability',
+			'sendRequestBill'
 		]);
 		$this->autoRender = false;
+	}
+
+	public function getBills() {
+		$data = $this->Notification->find('all', [
+			'fields' => ['Notification.order_id', 'Order.id', 'Order.total_amount', 'Order.table_id'],
+			'recursive' => 1
+		]);
+
+		$return_data = [];
+		foreach ($data as $key => $value) {
+			$return_data[$key]['order_id'] = $value['Order']['id'];
+			$return_data[$key]['total_amount'] = $value['Order']['total_amount'];
+			$return_data[$key]['table_id'] = $value['Order']['table_id'];
+		}
+		return json_encode($return_data);
 	}
 
 	public function getProducts() {
@@ -93,7 +111,7 @@ class ApisController extends AppController {
 			],
 			'order' 	=> [
 				'OrderDetail.kitchen_status' => 'ASC',
-				'OrderDetail.created' => 'DESC'
+				'OrderDetail.created' => 'ASC'
 			]
 		]);
 		$return_data = [];
@@ -223,6 +241,46 @@ class ApisController extends AppController {
 				return true;
 			}
 			return false;
+		}
+	}
+
+	public function sendRequestBill() {
+		if($this->request->is('post')){
+			$data 		= $this->request->input ( 'json_decode', true);
+			$order_id 	= $data['order_id'];
+			$table_id 	= $data['table_id'];
+
+			if( !$order_id ) {
+				throw new BadRequestException();
+			}
+			$order_data = $this->Order->find('first', [
+				'conditions' 	=> [
+					'id'		=> $order_id
+				]
+			]);
+			
+			$total_amount = 0;
+			foreach ($order_data['OrderDetail'] as $key => $value) {
+				$total_amount += $value['sub_total'];
+			}
+			
+			$datasource = $this->Order->getDataSource();
+
+			try {
+				$datasource->begin();
+				$return = false;
+				$this->Order->id = $order_id;
+				$this->TableNumber->id = $table_id;
+				if($this->Order->saveField('total_amount', $total_amount) && $this->TableNumber->saveField('is_occupied', 0) ) {
+					if($this->Notification->save($data)) {
+						$return = true;
+					}
+				}
+				$datasource->commit();
+				return $return;
+			} catch(Exception $e) {
+				$datasource->rollback();
+			}
 		}
 	}
 }

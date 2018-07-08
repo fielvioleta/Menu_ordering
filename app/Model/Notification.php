@@ -5,5 +5,5 @@ App::uses('AppModel', 'Model');
 *
 **/
 class Notification extends AppModel {
-	
+	public $belongsTo = 'Order';	
 }

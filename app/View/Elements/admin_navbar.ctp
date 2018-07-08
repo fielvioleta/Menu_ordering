@@ -9,7 +9,7 @@
 			</button>
 			<a class="navbar-brand" href="admin/dashboard"><?php echo $title ?></a>
 		</div>
-		<div class="collapse navbar-collapse">
+		<!-- <div class="collapse navbar-collapse">
 			<ul class="nav navbar-nav navbar-right">
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -26,6 +26,6 @@
 					</ul>
 				</li>
 			</ul>
-		</div>
+		</div> -->
 	</div>
 </nav>

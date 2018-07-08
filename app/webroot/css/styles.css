@@ -1,3 +1,7 @@
 .tx-font-size-14px {
 	font-size: 14px !important;
 }
+
+.btn-width-unset {
+	width: unset !important;
+}

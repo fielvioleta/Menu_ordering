@@ -44,12 +44,12 @@
                     </a>
                 </li>
             <?php endif; ?>
-            <li>
+            <!-- <li>
                 <a href="/admin/orders/list">
                     <i class="material-icons">local_pizza</i>
                     <p>Orders</p>
                 </a>
-            </li>
+            </li> -->
             <li>
                 <a href="/admin/users/logout">
                     <i class="material-icons">power_settings_new</i>
