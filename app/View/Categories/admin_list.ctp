@@ -15,6 +15,7 @@
                         <table class="table">
                         	<?php if(count($categories)>0):?>
 	                            <thead class="text-primary">
+	                            	<th>Image</th>
 	                            	<th>Name</th>
 	                            	<th>Description</th>
 									<th></th>
@@ -22,6 +23,9 @@
 	                            <tbody>
 		                            	<?php foreach( $categories as $key => $category ):?>
 			                                <tr>
+			                                	<td>
+			                                		<?php echo $this->Html->image('../'.$category['Category']['image_path']) ?> 
+			                                	</td>
 			                                	<td><?php echo $category['Category']['name'] ?></td>
 			                                	<td><?php echo $category['Category']['description'] ?></td>
 												<td>

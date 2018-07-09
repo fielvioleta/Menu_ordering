@@ -159,7 +159,6 @@
 <script>
 	$(document).ready(function(){
 		const files = <?php echo ( isset( $files ) ) ? json_encode($files) : "''" ?>;
-		console.log(files);
 		$('#input2').filer({
 	        limit: 1,
 	        extensions: ['jpg', 'jpeg', 'png', 'gif'],
