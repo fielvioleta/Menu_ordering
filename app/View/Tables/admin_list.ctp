@@ -2,7 +2,7 @@
     <div class="container-fluid">
 		<a href="/admin/tables/register">
 			<button type="submit" class="btn btn-primary pull-right">
-				Create tables<div class="ripple-container"></div>
+				Create table<div class="ripple-container"></div>
 			</button>
 		</a>
         <div class="row">

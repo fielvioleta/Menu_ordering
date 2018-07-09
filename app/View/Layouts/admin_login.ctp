@@ -7,7 +7,6 @@
 <body>
 	<div class="container">
 		<section id="content">
-			<?php echo $this->Flash->render(); ?>
 			<?php echo $this->fetch('content'); ?>
 		</section>
 	</div>

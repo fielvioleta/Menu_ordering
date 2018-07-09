@@ -4,6 +4,7 @@
 	]);
 ?>
 <h1>Login Form</h1>
+<?php echo $this->Flash->render(); ?>
 <div>
 	<?php 
 		echo $this->Form->input('username' , [
