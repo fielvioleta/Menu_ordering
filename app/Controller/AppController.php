@@ -34,7 +34,6 @@ class AppController extends Controller {
 	public $helpers = [ 'Html', 'Form' ];
 	public $components = [
 		'Session',
-		'DebugKit.Toolbar',
         'Flash',
         'Auth' => [
             'loginRedirect' => [
@@ -52,6 +51,15 @@ class AppController extends Controller {
             ]
         ]
     ];
+
+    public function constructClasses() {
+
+        if(Configure::read('debug') <= 1):
+        $this->components[] = 'DebugKit.Toolbar';
+        endif;
+
+        parent::constructClasses();
+    }
 
 	public function beforeFilter() {
         if( isset($this->request->params['prefix']) && $this->request->params['prefix'] == 'admin' && $this->request->params['action'] == 'admin_login' ) {
