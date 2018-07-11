@@ -94,7 +94,7 @@ class CategoriesController extends AppController {
 					if ($this->request->data['Category']['image']['error'] === 0) {
 						$folder 		= WWW_ROOT . 'files/categories/' . $id;
 						$image_name 	= $this->request->data['Category']['image']['name'];
-						$filepath		= $folder . '/categories.' . pathinfo($image_name, PATHINFO_EXTENSION);
+						$filepath		= $folder . '/category.' . pathinfo($image_name, PATHINFO_EXTENSION);
 						$filepathCopy	= $folder . '/show-category.' . pathinfo($image_name, PATHINFO_EXTENSION);
 						$generatedFile	= 'category.' . pathinfo($image_name, PATHINFO_EXTENSION);
 						$this->Category->saveField('image_path', '/files/categories/' . $id . '/show-category.' . pathinfo($image_name, PATHINFO_EXTENSION));
@@ -162,7 +162,7 @@ class CategoriesController extends AppController {
 			}
 			
 		}
-
+		
 		$this->set( 'files' , $arrFiles );
 	}
 

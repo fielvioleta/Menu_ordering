@@ -112,4 +112,4 @@ CakeLog::config('error', array(
 CakePlugin::load('DebugKit');
 CakePlugin::load('Utils');
 
-Configure::write('localhost','http://menuordering.online/');
+Configure::write('localhost','http:/menu.local/');
