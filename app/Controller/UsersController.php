@@ -16,8 +16,13 @@ class UsersController extends AppController {
 	public function admin_login() {
 		if( $this->request->is( 'post' ) ) {
 			if ($this->Auth->login()) {
-				if ( $this->Auth->user('user_type') == 3 ) {
-					return $this->Flash->error('Kitchen account cannot log in this platform');
+				switch ($this->Auth->user('user_type')) {
+					case 3:
+						return $this->Flash->error('Kitchen account cannot log in this platform');
+						break;
+					case 2:
+						return $this->Flash->error('Counter account cannot log in this platform');
+						break;
 				}
 				return $this->redirect($this->Auth->redirectUrl());
 			}

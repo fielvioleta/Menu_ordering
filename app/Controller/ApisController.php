@@ -5,6 +5,7 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 
 class ApisController extends AppController {
 	public $uses = [
+		'User',
 		'Product',
 		'Category',
 		'TableNumber',
@@ -16,6 +17,7 @@ class ApisController extends AppController {
 	public function beforeFilter() {
 		parent::beforeFilter();
 		$this->Auth->allow([
+			'checkAccount',
 			'getBills',
 			'getProducts',
 			'getCategories',
@@ -30,6 +32,26 @@ class ApisController extends AppController {
 			'sendRequestBill'
 		]);
 		$this->autoRender = false;
+	}
+
+	public function checkAccount() {
+		if($this->request->is('post')){
+			$data 		= $this->request->input ( 'json_decode', true);
+			$username 	= $data['username'];
+			$password 	= $data['password'];
+			$user = $this->User->findByUsername($username);
+			
+			if( !$user ) {
+				return false;
+			}
+
+			$correct = $user['User']['password'] == Security::hash($password, 'Blowfish', $user['User']['password']);
+			if($correct) {
+				return true;
+			}
+			return false;
+		}
+		
 	}
 
 	public function getBills() {
